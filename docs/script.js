@@ -1,7 +1,9 @@
 var canvas = document.querySelector("#rfCanvas");
 var context = canvas.getContext("2d");
+var spike = document.getElementById("audio"); 
 
 const CANVAS_SIZE = 63;
+let response = 0;
 
 // Load our model.
 const sess = new onnx.InferenceSession();
@@ -37,7 +39,7 @@ function Bar(x, y, dx, dy, width, height, angle, rgb) {
     }
 }
 
-let bar = new Bar(100, 100, 0, 0, 10, 20, 0.5, "#FE8E9D");
+let bar = new Bar(100, 100, 0, 0, 10, 20, 0.5, "#FFFFFF");
 bar.draw();
 
 window.addEventListener('mousemove',
@@ -48,12 +50,14 @@ window.addEventListener('mousemove',
     updatePredictions();
 });
 
-let response = 0;
+
 canvas.addEventListener('mouseover',
     event => {
-    if (response > 0) {
-        playAudio()
-    }
+    setInterval(() => {
+        if (response > 0) {
+        spike.play();
+        }
+    }, 10000000/response);
 });
 
 async function updatePredictions() {
@@ -71,30 +75,20 @@ async function updatePredictions() {
             }
         }
     }
-    // console.log(rgbArray)
-    const input = new onnx.Tensor(rgbArray, "float32", [1, 3, 63, 63]);
-    // console.log(input)
+    const input = new onnx.Tensor(rgbArray, "float32", [1, 3, CANVAS_SIZE, CANVAS_SIZE]);
   
     const outputMap = await sess.run([input]);
-    console.log(outputMap)
     const outputTensor = outputMap.values().next().value;
     const responses = outputTensor.data;
 
     let unit_i = 0;
-    console.log(responses.slice(0, 49))
     let element = document.getElementById('output')
     element.innerHTML = responses[1]
     response = responses[1]
-    if (response > 0) {
-        playAudio()
-    }
   }
 
-var x = document.getElementById("audio"); 
 
-async function playAudio() { 
-  x.play(); 
-} 
+
 
 
 
