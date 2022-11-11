@@ -1,0 +1,6 @@
+# Disable CORS on Chrome
+open -n -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security
+
+# Spin up a local file server
+cd "/Users/tonyfu/Desktop/Bair Lab/rf_playground/server"
+python3 -m http.server --cgi 8081

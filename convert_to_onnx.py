@@ -78,8 +78,9 @@ def export_model(model_name, rf_data):
         truncated_model.eval()
 
         dummy_input = torch.zeros((1, 3, xn, xn))
+        print(dummy_input.shape)
         torch.onnx.export(truncated_model, dummy_input,
-                 os.path.join('onnx_files', f'{model_name}_conv{conv_i+1}.onnx'))
+                 os.path.join('server', 'onnx_files', f'{model_name}_conv{conv_i+1}.onnx'))
 
 
 if __name__ == "__main__":
