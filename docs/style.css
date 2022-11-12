@@ -6,8 +6,8 @@ body {
 #rfCanvas {
     border: black solid 10px;
     position: absolute;
-    top: 500px;
-    left: 100px;
+    top: 350px;
+    left: 350px;
     /* height: 500px;
     width: 500px; */
 }
@@ -15,7 +15,7 @@ body {
 input[type=range]{
     -webkit-appearance: none; /* Override default CSS styles */
     border: 1px solid black;
-    border-radius: 10px;
+    border-radius: 12px;
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -40,4 +40,8 @@ input[type="range"]::-webkit-slider-thumb {
 
 #mute {
     border-radius: 10px;
+}
+
+.instructions {
+    font-family: monospace;
 }

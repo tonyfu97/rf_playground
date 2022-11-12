@@ -35,6 +35,21 @@ const populateLayerMenu = () => {
 }
 populateLayerMenu();
 
+// Initialize canvas dimensions:
+let canvas_size = rf_data[model_name].xn[conv_i];
+let canvasPos = canvas.getBoundingClientRect();
+let canvasBorderWidth = (canvasPos.right - canvasPos.left - canvas_size)/2;
+
+// Canvas dimension logic:
+const updateCanvasSize = (model_name, conv_i) => {
+    canvas_size = rf_data[model_name].xn[conv_i];
+    canvas.height = canvas_size;
+    canvas.width = canvas_size;
+    canvasPos = canvas.getBoundingClientRect();
+    canvasBorderWidth = (canvasPos.right - canvasPos.left - canvas_size)/2;
+    bar.update();
+}
+
 // model dropdown menu logic:
 model_name_menu.addEventListener('change', (event) => {
     model_name = model_name_menu.value;
@@ -42,10 +57,12 @@ model_name_menu.addEventListener('change', (event) => {
     populateLayerMenu();
     layer = layer_menu.value;
     conv_i = parseInt(layer.match(/\d+/)[0]) - 1
-    console.log(conv_i)
     num_units = rf_data[model_name].nums_units[conv_i];
     unit_id_label.innerHTML = `Choose a unit (0 - ${num_units-1}): `;
     unit_id_input.max = num_units - 1;
+    sess = new onnx.InferenceSession();
+    loadingModelPromise = sess.loadModel(`../server/onnx_files/${model_name}_${layer}.onnx`);
+    updateCanvasSize(model_name, conv_i);
 });
 
 // layer dropdown menu logic:
@@ -55,6 +72,9 @@ layer_menu.addEventListener('change', (event) => {
     num_units = rf_data[model_name].nums_units[conv_i];
     unit_id_label.innerHTML = `Choose a unit (0 - ${num_units-1}): `;
     unit_id_input.max = num_units - 1;
+    sess = new onnx.InferenceSession();
+    loadingModelPromise = sess.loadModel(`../server/onnx_files/${model_name}_${layer}.onnx`);
+    updateCanvasSize(model_name, conv_i);
 });
 
 // unit input form logic:
@@ -62,11 +82,11 @@ unit_id_input.addEventListener('change', (event) => {
     unit_id = parseInt(unit_id_input.value);
 });
 
-
 // Get colors of the bar and background from index.html.
 var bar_color_div = document.getElementById("bar_color");
 var bg_color_div = document.getElementById("bg_color");
 const convertTo256 = num => Math.floor((parseFloat(num) + 1) * 128);
+let canvasBgRgb = "rgb(128,128,128)";
 
 // Bar color slider logic:
 bar_color_div.addEventListener('change', (event) => {
@@ -90,17 +110,10 @@ bg_color_div.addEventListener('change', (event) => {
 })
 
 
-
-const CANVAS_SIZE = 15;
-let canvasPos = canvas.getBoundingClientRect();
-let canvasBorderWidth = (canvasPos.right - canvasPos.left - CANVAS_SIZE)/2;
-let canvasBgRgb = "rgb(128,128,128)";
-let response = 0;
-
-
 // Load model.
-const sess = new onnx.InferenceSession();
-const loadingModelPromise = sess.loadModel(`../server/onnx_files/${model_name}_${layer}.onnx`);
+let sess = new onnx.InferenceSession();
+let loadingModelPromise = sess.loadModel(`../server/onnx_files/${model_name}_${layer}.onnx`);
+let response = 0;
 
 // Initialize mouse object (used to keep track of mouse position):
 let mouse = {
@@ -116,6 +129,10 @@ function Bar(x, y, width, height, angle, rgb) {
     this.height = height;
     this.angle = angle;
     this.rgb = rgb;
+
+    // this.rotate = function() {
+        
+    // }
 
     this.draw = function() {
         context.fillStyle = canvasBgRgb;
@@ -135,7 +152,7 @@ function Bar(x, y, width, height, angle, rgb) {
         this.draw();
     }
 }
-let bar = new Bar(0, 0, 10, 20, 0.5, "#FFFFFF");
+let bar = new Bar(0, 0, 5, 10, 0.5, "#FFFFFF");
 bar.draw();
 
 // Mouse move logic:
@@ -159,24 +176,43 @@ canvas.addEventListener('mouseover',
     }, 100);
 });
 
+// Enlarge/shrink the bar size:
+document.addEventListener('keypress', (event) => {
+    var name = event.key;
+
+    if (name == 'w') {
+        bar.height *= 1.1;
+        bar.update();
+    } else if (name == 's') {
+        bar.height *= 0.9;
+        bar.update();
+    } else if (name == 'd') {
+        bar.width *= 1.1;
+        bar.update();
+    } else if (name == 'a') {
+        bar.width *= 0.9;
+        bar.update();
+    }
+});
+
 // Get prediction. This function is called whenever the mouse is moved.
 async function updatePredictions() {
-    const imgData = context.getImageData(0, 0, CANVAS_SIZE, CANVAS_SIZE).data;
+    const imgData = context.getImageData(0, 0, canvas_size, canvas_size).data;
     // imgData is 1D array with length 1 * 4 * xn * xn.
 
     // Reshape 1D array into [1, 3, xn, xn] (but still flattens it).
-    let rgbArray = new Float32Array(3 * CANVAS_SIZE * CANVAS_SIZE);
+    let rgbArray = new Float32Array(3 * canvas_size * canvas_size);
     let idx = 0
     for (var rgb_i = 0; rgb_i < 3; rgb_i++) { // RGB only (ignoring the 4th channel)
-        for (var i = 0; i < CANVAS_SIZE; i++) { // Height
-            for (var j = 0; j < CANVAS_SIZE; j++) { // Width
-                let offset = (i * CANVAS_SIZE * 4) + (j * 4) + rgb_i
+        for (var i = 0; i < canvas_size; i++) { // Height
+            for (var j = 0; j < canvas_size; j++) { // Width
+                let offset = (i * canvas_size * 4) + (j * 4) + rgb_i
                 // Change color range from [0, 255] to [-1, 1).
                 rgbArray[idx++] = (imgData[offset] - 128) / 128;
             }
         }
     }
-    const input = new onnx.Tensor(rgbArray, "float32", [1, 3, CANVAS_SIZE, CANVAS_SIZE]);
+    const input = new onnx.Tensor(rgbArray, "float32", [1, 3, canvas_size, canvas_size]);
     const outputMap = await sess.run([input]);
     const outputTensor = outputMap.values().next().value;
     const responses = outputTensor.data;
