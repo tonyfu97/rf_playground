@@ -10,15 +10,15 @@
 <body>
     <!-- Load ONNX.js -->
     <script src="https://cdn.jsdelivr.net/npm/onnxjs/dist/onnx.min.js"></script>
-    <!-- Draw canvas -->
-    <canvas id="rfCanvas" width="63px", height="63px"></canvas>
-    <script type="module" src="script.js"></script>
-    <h2 id="output"></h2>
-    <audio id="audio" src="spike.m4a"></audio>
+
+    <!-- Header -->
+    <header>
+        <h1>Welcome to Receptive Field Playground!</h1>
+    </header>
 
     <!-- Model drop down menu -->
-    <label for="model_name" id="model_name">Choose a model</label>
-    <select>
+    <label for="model_name">Choose a model: </label>
+    <select id="model_name">
         <option value="alexnet">AlexNet</option>
         <option value="vgg16">Vgg16</option>
         <option value="resnet18">ResNet18</option>
@@ -26,11 +26,44 @@
     <br>
 
     <!-- Layer drop down menu -->
-    <label for="layer" id="layer">Choose a layer</label>
-    <select>
-        <option value="alexnet">AlexNet</option>
-        <option value="vgg16">Vgg16</option>
-        <option value="resnet18">ResNet18</option>
+    <label for="layer">Choose a layer: </label>
+    <select id="layer">
+        <option value="conv1">conv1</option>
     </select>
+    <br>
+
+    <!-- Unit id input -->
+    <label for="unit_id" id="unit_id_label">Choose a unit: </label>
+    <input type="number" id="unit_id" name="unit_id" min="0" max="0" value="0">
+    <br>
+
+    <h2 id="unit_info"></h2>
+
+    <!-- Bar color -->
+    <div id="bar_color">
+        <label for="bar_color" id="bar_color_label">Bar color = rgb(255, 255, 255) </label>
+        <br>
+        <input type="range" id="bar_red" name="bar_red" min="-1" max="1" value="1" step="0.1">
+        <input type="range" id="bar_green" name="bar_green" min="-1" max="1" value="1" step="0.1">
+        <input type="range" id="bar_blue" name="bar_blue" min="-1" max="1" value="1" step="0.1">
+    </div>
+    <br>
+
+    <!-- Background color -->
+    <div id="bg_color">
+        <label for="bg_color" id="bg_color_label">Backgroun color = rgb(128, 128, 128) </label>
+        <br>
+        <input type="range" id="bg_red" name="bg_red" min="-1" max="1" value="0" step="0.1">
+        <input type="range" id="bg_green" name="bg_green" min="-1" max="1" value="0" step="0.1">
+        <input type="range" id="bg_blue" name="bg_blue" min="-1" max="1" value="0" step="0.1">
+    </div>
+    <br>
+
+    <h3 id="output"></h3>
+    <p>Please turn up the volume for audio feedback.</p>
+    <!-- Draw canvas -->
+    <canvas id="rfCanvas" width="15px", height="15px"></canvas>
+    <script type="module" src="script.js"></script>
+    <audio id="audio" src="spike.m4a"></audio>
 </body>
 </html>

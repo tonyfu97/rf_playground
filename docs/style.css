@@ -1,11 +1,40 @@
 
 #rfCanvas {
     border: black solid 10px;
-    background: gray;
     position: absolute;
-    top: 200px;
+    top: 500px;
     left: 100px;
+    /* height: 500px;
+    width: 500px; */
 }
+
+input[type=range]{
+    -webkit-appearance: none; /* Override default CSS styles */
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: black;
+}
+
+#bar_red, #bg_red {
+    background: red; /* Grey background */
+}
+
+#bar_green, #bg_green {
+    background: green; /* Grey background */
+}
+
+#bar_blue, #bg_blue {
+    background: blue; /* Grey background */
+}
+
+
 
 body {
     margin: 0;
