@@ -3,6 +3,9 @@ var context = canvas.getContext("2d");
 var spike = document.getElementById("audio"); 
 
 const CANVAS_SIZE = 63;
+
+let canvasPos = canvas.getBoundingClientRect();
+let canvasBorderWidth = (canvasPos.right - canvasPos.left - CANVAS_SIZE)/2;
 let response = 0;
 
 // Load our model.
@@ -33,8 +36,9 @@ function Bar(x, y, dx, dy, width, height, angle, rgb) {
 
     this.update = function() {
         context.clearRect(0, 0, canvas.width, canvas.height);
-        this.x = mouse.x - this.width / 2 - 110;
-        this.y = mouse.y - this.height / 2 - 110;
+        console.log(canvas.style.marginTop)
+        this.x = mouse.x - this.width / 2 - canvasPos.left - canvasBorderWidth;
+        this.y = mouse.y - this.height / 2 - canvasPos.top - canvasBorderWidth;
         this.draw();
     }
 }
@@ -55,9 +59,10 @@ canvas.addEventListener('mouseover',
     event => {
     setInterval(() => {
         if (response > 0) {
+        spike.volume = Math.min(response/1500, 1);
         spike.play();
         }
-    }, 10000000/response);
+    }, 100);
 });
 
 async function updatePredictions() {
@@ -82,13 +87,8 @@ async function updatePredictions() {
     const responses = outputTensor.data;
 
     let unit_i = 0;
-    let element = document.getElementById('output')
-    element.innerHTML = responses[1]
+    let element = document.getElementById('output');
+    element.innerHTML = `response = ${Math.round(responses[1] * 100) / 100}`;
     response = responses[1]
   }
-
-
-
-
-
 
