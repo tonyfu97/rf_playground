@@ -94,7 +94,7 @@ bar_color_div.addEventListener('change', (event) => {
     let g = document.getElementById("bar_green").value;
     let b = document.getElementById("bar_blue").value;
     bar.rgb = `rgb(${convertTo256(r)},${convertTo256(g)},${convertTo256(b)})`;
-    document.getElementById("bar_color_label").innerHTML = 'Bar color = ' + bar.rgb;
+    document.getElementById("bar_color_label").innerHTML = `Bar color = rgb(${r}, ${g}, ${b})`;
     bar.update();
 })
 
@@ -104,7 +104,7 @@ bg_color_div.addEventListener('change', (event) => {
     let g = document.getElementById("bg_green").value;
     let b = document.getElementById("bg_blue").value;
     let rgb = `rgb(${convertTo256(r)},${convertTo256(g)},${convertTo256(b)})`;
-    document.getElementById("bg_color_label").innerHTML = 'Background color = ' + rgb;
+    document.getElementById("bg_color_label").innerHTML = `Background color = rgb(${r}, ${g}, ${b})`;
     canvasBgRgb = rgb;
     bar.update();
 })
