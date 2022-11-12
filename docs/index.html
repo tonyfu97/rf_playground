@@ -37,8 +37,6 @@
     <input type="number" id="unit_id" name="unit_id" min="0" max="0" value="0">
     <br>
 
-    <h2 id="unit_info"></h2>
-
     <!-- Bar color -->
     <div id="bar_color">
         <label for="bar_color" id="bar_color_label">Bar color = rgb(255, 255, 255) </label>
@@ -60,10 +58,10 @@
     <br>
 
     <h3 id="output"></h3>
-    <p>Please turn up the volume for audio feedback.</p>
+    <button id="mute"></button>
     <!-- Draw canvas -->
     <canvas id="rfCanvas" width="15px", height="15px"></canvas>
     <script type="module" src="script.js"></script>
-    <audio id="audio" src="spike.m4a"></audio>
+    <audio id="audio" src="spike.m4a" muted></audio>
 </body>
 </html>
