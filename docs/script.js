@@ -226,7 +226,7 @@ canvas.addEventListener('mouseover',
         spike.volume = Math.min(response/5, 1);
         spike.play();
         }
-    }, 100);
+    }, 500);
 });
 
 // Enlarge/shrink/rotate the bar size:
