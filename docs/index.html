@@ -20,8 +20,8 @@
     <label for="model_name">Choose a model: </label>
     <select id="model_name">
         <option value="alexnet">AlexNet</option>
-        <option value="vgg16">Vgg16 (currently not supported)</option>
-        <option value="resnet18">ResNet18 (currently not supported)</option>
+        <option value="vgg16">Vgg16</option>
+        <option value="resnet18">ResNet18</option>
     </select>
     <br>
 
@@ -57,11 +57,12 @@
     </div>
     <br>
 
-    <h3 id="output">Please hover the cursor above the canvas</h3>
+    <h3 id="output">Please hover the cursor above the canvas →</h3>
     <button id="mute"></button>
 
     <!-- Instructions -->
     <div class="instructions">
+        <h4>Instructions:</h4>
         <ul>
             <li>Press "r" to rotate counter-clockwise</li>
             <li>Press "t" to rotate clockwise</li>
@@ -70,6 +71,7 @@
             <li>Press "d" to increase bar width</li>
             <li>Press "a" to decrease bar width</li>
             <li id="rf_size_li">RF size = , Canvas size = </li>
+            <li>Expect latancy for deep layers.</li>
         </ul>
     </div>
 

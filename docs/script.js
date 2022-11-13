@@ -46,6 +46,14 @@ const populateLayerMenu = () => {
 
     // Populate with new layer options.
     for(let i = 1; i < num_layers+1; i++) {
+        // Deeper layers are too big. They are not supported and should not
+        // be included in the dropdown menu.
+        if (model_name == "vgg16" && i > 8) {
+            break;
+        } else if (model_name == "resnet18" && i > 15) {
+            break;
+        }
+
         let thisLayerName = `conv${i}`;
         var newOption = document.createElement("option");
         newOption.textContent = thisLayerName;
@@ -225,7 +233,7 @@ canvas.addEventListener('mouseover',
         spike.volume = Math.min(response/5, 1);
         spike.play();
         }
-    }, 500);
+    }, 100);
 });
 
 // Enlarge/shrink/rotate the bar size:

@@ -7,3 +7,5 @@ For local development, consider turning off the CORS by typing the following in 
 
 The web app is deployed at:
 [demo](https://tonyfu97.github.io/rf_playground/)
+
+Credit: This work is inspired by [elliotwaite's work] (https://github.com/elliotwaite/pytorch-to-javascript-with-onnx-js)

@@ -84,6 +84,6 @@ def export_model(model_name, rf_data):
 
 
 if __name__ == "__main__":
-    model_name = 'alexnet'
+    model_name = 'resnet18'
     rf_data = load_rf_data()
     export_model(model_name, rf_data)
