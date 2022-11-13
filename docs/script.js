@@ -8,7 +8,6 @@ var unit_id_input = document.getElementById("unit_id");
 var unit_id_label = document.getElementById("unit_id_label");
 
 // Load rf data.
-// import rf_data from './rf_data.json' assert {type: 'json'};
 let rf_data = {
     "alexnet": {
         "layer_indices": [0, 3, 6, 8, 10],
