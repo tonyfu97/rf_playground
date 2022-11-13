@@ -8,7 +8,7 @@ var unit_id_input = document.getElementById("unit_id");
 var unit_id_label = document.getElementById("unit_id_label");
 
 // Load rf data.
-import rf_data from '../rf_data.json' assert {type: 'json'};
+import rf_data from './rf_data.json' assert {type: 'json'};
 
 // Get model, layer, and unit_id (the default values) from index.html.
 let model_name = model_name_menu.value;
@@ -72,7 +72,7 @@ model_name_menu.addEventListener('change', async (event) => {
     unit_id_label.innerHTML = `Choose a unit (0 - ${num_units-1}): `;
     unit_id_input.max = num_units - 1;
     sess = new onnx.InferenceSession();
-    loadingModelPromise = await sess.loadModel(`../server/onnx_files/${model_name}_${layer}.onnx`);
+    loadingModelPromise = await sess.loadModel(`./onnx_files/${model_name}_${layer}.onnx`);
     updateCanvasSize(model_name, conv_i);
 });
 
@@ -84,7 +84,7 @@ layer_menu.addEventListener('change', async (event) => {
     unit_id_label.innerHTML = `Choose a unit (0 - ${num_units-1}): `;
     unit_id_input.max = num_units - 1;
     sess = new onnx.InferenceSession();
-    loadingModelPromise = await sess.loadModel(`../server/onnx_files/${model_name}_${layer}.onnx`);
+    loadingModelPromise = await sess.loadModel(`./onnx_files/${model_name}_${layer}.onnx`);
     updateCanvasSize(model_name, conv_i);
 });
 
@@ -123,7 +123,7 @@ bg_color_div.addEventListener('change', (event) => {
 
 // Load model.
 let sess = new onnx.InferenceSession();
-let loadingModelPromise = sess.loadModel(`../server/onnx_files/${model_name}_${layer}.onnx`);
+let loadingModelPromise = sess.loadModel(`./onnx_files/${model_name}_${layer}.onnx`);
 let response = 0;
 
 // Initialize mouse object (used to keep track of mouse position):

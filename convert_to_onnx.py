@@ -57,7 +57,7 @@ def get_truncated_model(model, layer_index):
 
 
 def load_rf_data():
-    with open('rf_data.json', 'r') as f:
+    with open('docs/rf_data.json', 'r') as f:
         rf_data = json.load(f)
     return rf_data
 
@@ -80,7 +80,7 @@ def export_model(model_name, rf_data):
         dummy_input = torch.zeros((1, 3, xn, xn))
         print(dummy_input.shape)
         torch.onnx.export(truncated_model, dummy_input,
-                 os.path.join('server', 'onnx_files', f'{model_name}_conv{conv_i+1}.onnx'))
+                 os.path.join('docs', 'onnx_files', f'{model_name}_conv{conv_i+1}.onnx'))
 
 
 if __name__ == "__main__":
