@@ -1,5 +1,6 @@
 var canvas = document.querySelector("#rfCanvas");
 var context = canvas.getContext("2d");
+const CANVAS_BORDER_WIDTH = 10;  // must be consistent with style.css
 
 var model_name_menu = document.getElementById("model_name");
 var layer_menu = document.getElementById("layer");
@@ -36,22 +37,32 @@ const populateLayerMenu = () => {
 populateLayerMenu();
 
 // Initialize canvas dimensions:
+let rf_size_li = document.getElementById("rf_size_li");
+let rf_size = rf_data[model_name].rf_sizes[conv_i];
 let canvas_size = rf_data[model_name].xn[conv_i];
 let canvasPos = canvas.getBoundingClientRect();
-let canvasBorderWidth = (canvasPos.right - canvasPos.left - canvas_size)/2;
+let canvasFactor = (canvasPos.width - 2 * CANVAS_BORDER_WIDTH) / canvas_size
+
+// Update the string on the list item that indicates rf size and canvas size.
+const updateRfSizeLi = (rf_size, canvas_size) => {
+    rf_size_li.innerHTML = `RF size = ${rf_size}, Canvas size = ${canvas_size}`;
+}
+updateRfSizeLi(rf_size, canvas_size);
 
 // Canvas dimension logic:
 const updateCanvasSize = (model_name, conv_i) => {
     canvas_size = rf_data[model_name].xn[conv_i];
+    rf_size = rf_data[model_name].rf_sizes[conv_i];
     canvas.height = canvas_size;
     canvas.width = canvas_size;
     canvasPos = canvas.getBoundingClientRect();
-    canvasBorderWidth = (canvasPos.right - canvasPos.left - canvas_size)/2;
+    canvasFactor = (canvasPos.width - 2 * CANVAS_BORDER_WIDTH) / canvas_size
     bar.update();
+    updateRfSizeLi(rf_size, canvas_size);
 }
 
 // model dropdown menu logic:
-model_name_menu.addEventListener('change', (event) => {
+model_name_menu.addEventListener('change', async (event) => {
     model_name = model_name_menu.value;
     num_layers = rf_data[model_name].layer_indices.length;
     populateLayerMenu();
@@ -61,19 +72,19 @@ model_name_menu.addEventListener('change', (event) => {
     unit_id_label.innerHTML = `Choose a unit (0 - ${num_units-1}): `;
     unit_id_input.max = num_units - 1;
     sess = new onnx.InferenceSession();
-    loadingModelPromise = sess.loadModel(`../server/onnx_files/${model_name}_${layer}.onnx`);
+    loadingModelPromise = await sess.loadModel(`../server/onnx_files/${model_name}_${layer}.onnx`);
     updateCanvasSize(model_name, conv_i);
 });
 
 // layer dropdown menu logic:
-layer_menu.addEventListener('change', (event) => {
+layer_menu.addEventListener('change', async (event) => {
     layer = layer_menu.value;
     conv_i = parseInt(layer.match(/\d+/)[0]) - 1
     num_units = rf_data[model_name].nums_units[conv_i];
     unit_id_label.innerHTML = `Choose a unit (0 - ${num_units-1}): `;
     unit_id_input.max = num_units - 1;
     sess = new onnx.InferenceSession();
-    loadingModelPromise = sess.loadModel(`../server/onnx_files/${model_name}_${layer}.onnx`);
+    loadingModelPromise = await sess.loadModel(`../server/onnx_files/${model_name}_${layer}.onnx`);
     updateCanvasSize(model_name, conv_i);
 });
 
@@ -127,41 +138,63 @@ function Bar(x, y, width, height, angle, rgb) {
     this.y = y;
     this.width = width;
     this.height = height;
-    this.angle = angle;
-    this.rgb = rgb;
-
-    // this.rotate = function() {
-        
-    // }
+    this.angle = angle;  // in radians
+    this.rgb = rgb;   // as string like "rgb(255, 255, 255)" or "#FFFFFF"
 
     this.draw = function() {
         context.fillStyle = canvasBgRgb;
         context.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Apply rotation matrix
+        let top_left_x = this.x + (Math.cos(this.angle) * (-this.width/2) + Math.sin(this.angle) * (-this.height/2));
+        let top_left_y = this.y + (-Math.sin(this.angle) * (-this.width/2) + Math.cos(this.angle) * (-this.height/2));
 
+        let top_right_x = this.x + (Math.cos(this.angle) * (this.width/2) + Math.sin(this.angle) * (-this.height/2));
+        let top_right_y = this.y + (-Math.sin(this.angle) * (this.width/2) + Math.cos(this.angle) * (-this.height/2));
+
+        let bottom_left_x = this.x + (Math.cos(this.angle) * (-this.width/2) + Math.sin(this.angle) * (this.height/2));
+        let bottom_left_y = this.y + (-Math.sin(this.angle) * (-this.width/2) + Math.cos(this.angle) * (this.height/2));
+
+        let bottom_right_x = this.x + (Math.cos(this.angle) * (this.width/2) + Math.sin(this.angle) * (this.height/2));
+        let bottom_right_y = this.y + (-Math.sin(this.angle) * (this.width/2) + Math.cos(this.angle) * (this.height/2));
+        
+        // Draw the rectangle
         context.beginPath();
-        context.rect(this.x, this.y, this.width, this.height);
+        // context.rect(this.x, this.y, this.width, this.height);
+        context.moveTo(top_left_x, top_left_y);
+        context.lineTo(top_right_x, top_right_y);
+        context.lineTo(bottom_right_x, bottom_right_y);
+        context.lineTo(bottom_left_x, bottom_left_y);
+        context.closePath();
         context.fillStyle = this.rgb;
         context.fill();
+    }
+
+    this.convert_mouse_xy_to_canvas_xy = function() {
+        this.x = mouse.x - canvasPos.left - CANVAS_BORDER_WIDTH;
+        this.x = this.x/canvasFactor;
+        this.y = mouse.y - canvasPos.top - CANVAS_BORDER_WIDTH;
+        this.y = this.y/canvasFactor;
     }
 
     this.update = function() {
         context.fillStyle = canvasBgRgb;
         context.fillRect(0, 0, canvas.width, canvas.height);
-        this.x = mouse.x - this.width / 2 - canvasPos.left - canvasBorderWidth;
-        this.y = mouse.y - this.height / 2 - canvasPos.top - canvasBorderWidth;
+        this.convert_mouse_xy_to_canvas_xy();
         this.draw();
     }
 }
-let bar = new Bar(0, 0, 5, 10, 0.5, "#FFFFFF");
+let bar = new Bar(0, 0, 5, 10, 0, "#FFFFFF");
 bar.draw();
 
 // Mouse move logic:
 canvas.addEventListener('mousemove',
-    event => {
+    async (event) => {
     mouse.x = event.x;
     mouse.y = event.y;
     bar.update();
-    updatePredictions();
+    await loadingModelPromise;
+    await updatePredictions();
 });
 
 // Continuously playing spike sound even when mouse is not moving:
@@ -176,7 +209,7 @@ canvas.addEventListener('mouseover',
     }, 100);
 });
 
-// Enlarge/shrink the bar size:
+// Enlarge/shrink/rotate the bar size:
 document.addEventListener('keypress', (event) => {
     var name = event.key;
 
@@ -192,7 +225,14 @@ document.addEventListener('keypress', (event) => {
     } else if (name == 'a') {
         bar.width *= 0.9;
         bar.update();
+    } else if (name == 'r') {
+        bar.angle += Math.PI / 32;
+        bar.update();
+    } else if (name == 't') {
+        bar.angle -= Math.PI / 32;
+        bar.update();
     }
+    updatePredictions()
 });
 
 // Get prediction. This function is called whenever the mouse is moved.
@@ -213,6 +253,7 @@ async function updatePredictions() {
         }
     }
     const input = new onnx.Tensor(rgbArray, "float32", [1, 3, canvas_size, canvas_size]);
+    await loadingModelPromise;
     const outputMap = await sess.run([input]);
     const outputTensor = outputMap.values().next().value;
     const responses = outputTensor.data;
