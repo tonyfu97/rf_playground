@@ -46,8 +46,8 @@ const populateLayerMenu = () => {
 
     // Populate with new layer options.
     for(let i = 1; i < num_layers+1; i++) {
-        // Deeper layers are too big. They are not supported and should not
-        // be included in the dropdown menu.
+        // Deeper layers are too big. They are too slow to render and should
+        // not be included in the dropdown menu.
         if (model_name == "vgg16" && i > 8) {
             break;
         } else if (model_name == "resnet18" && i > 15) {
@@ -147,7 +147,6 @@ bg_color_div.addEventListener('change', (event) => {
     bar.update();
 })
 
-
 // Load model.
 let sess = new onnx.InferenceSession();
 let loadingModelPromise = sess.loadModel(`./onnx_files/${model_name}_${layer}.onnx`);
@@ -236,7 +235,7 @@ canvas.addEventListener('mouseover',
     }, 100);
 });
 
-// Enlarge/shrink/rotate the bar size:
+// Enlarge/shrink/rotate the bar:
 document.addEventListener('keypress', (event) => {
     var name = event.key;
 
