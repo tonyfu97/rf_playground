@@ -10,6 +10,8 @@ import torchvision.models as models
 def get_truncated_model(model, layer_index):
     """
     Create a truncated version of the neural network.
+    
+    Tony Fu, Oct 2022
 
     Parameters
     ----------
@@ -63,7 +65,7 @@ def load_rf_data():
 
 
 def export_model(model_name, rf_data):
-    """Load the model as onnx file. One file per conv layer."""
+    """Export the model as onnx file. One file per conv layer."""
     model_func = getattr(models, model_name)
     model = model_func(pretrained=True)
     
@@ -84,6 +86,11 @@ def export_model(model_name, rf_data):
 
 
 if __name__ == "__main__":
-    model_name = 'resnet18'
-    rf_data = load_rf_data()
-    export_model(model_name, rf_data)
+    for model_name in ('alexnet', 'vgg16', 'resnet18'):
+        rf_data = load_rf_data()
+        export_model(model_name, rf_data)
+    
+    """
+    Note: The onnx files of deep layers are not too large to make sense in a
+    web app. Consider deleting them manually after running this script.
+    """
