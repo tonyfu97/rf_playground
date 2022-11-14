@@ -216,8 +216,8 @@ bar.draw();
 // Mouse move logic:
 canvas.addEventListener('mousemove',
     async (event) => {
-    mouse.x = event.x;
-    mouse.y = event.y;
+    mouse.x = event.x + window.scrollX;
+    mouse.y = event.y + window.scrollY;
     bar.update();
     await loadingModelPromise;
     await updatePredictions();
