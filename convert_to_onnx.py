@@ -86,11 +86,11 @@ def export_model(model_name, rf_data):
 
 
 if __name__ == "__main__":
+    rf_data = load_rf_data()
     for model_name in ('alexnet', 'vgg16', 'resnet18'):
-        rf_data = load_rf_data()
         export_model(model_name, rf_data)
     
     """
-    Note: The onnx files of deep layers are too large to make sense in a
-    web app. Consider deleting them manually after running this script.
+    Note: The onnx files of deep layers are too large (> 10 Mb) to make sense
+    in a web app. Consider deleting them manually after running this script.
     """
