@@ -1,6 +1,6 @@
 # rf_playground
 
-<img src="docs/images/overview.jpg"  width="300">
+<div style="justify-content: center"><img src="docs/images/overview.jpg"  width="500"></div>
 
 Let the user map the receptive field of a chosen artificial unit using a bar stimulus, then compare the mapping result with the ground truth map. The web app reduces latency by using ONNX.js to load the neural network and HTML5 Canvas for user interactions. **The website is under construction**.
 
