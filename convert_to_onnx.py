@@ -91,6 +91,6 @@ if __name__ == "__main__":
         export_model(model_name, rf_data)
     
     """
-    Note: The onnx files of deep layers are not too large to make sense in a
+    Note: The onnx files of deep layers are too large to make sense in a
     web app. Consider deleting them manually after running this script.
     """
