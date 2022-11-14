@@ -45,3 +45,11 @@ input[type="range"]::-webkit-slider-thumb {
 .instructions {
     font-family: monospace;
 }
+
+#overview_img {
+    height: 300px;
+    border: 1px solid black;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
