@@ -251,6 +251,48 @@ document.addEventListener('keypress', (event) => {
     } else if (name == " ") {  // spacebar
         event.preventDefault();
         barFrozen = !barFrozen;  // prevents spacebar-evoked page scrolling.
+    } else if (name == "1") { // red
+        document.getElementById("bar_red").value = 1;
+        document.getElementById("bar_green").value = -1;
+        document.getElementById("bar_blue").value = -1;
+        bar.rgb = `rgb(255,0,0)`;
+        document.getElementById("bar_color_label").innerHTML = `Bar color = rgb(1, -1, -1)`;
+        bar.update();
+    } else if (name == "2") {  // yellow
+        document.getElementById("bar_red").value = 1;
+        document.getElementById("bar_green").value = 1;
+        document.getElementById("bar_blue").value = -1;
+        bar.rgb = `rgb(255,255,0)`;
+        document.getElementById("bar_color_label").innerHTML = `Bar color = rgb(1, 1, -1)`;
+        bar.update();
+    } else if (name == "3") {  // green
+        document.getElementById("bar_red").value = -1;
+        document.getElementById("bar_green").value = 1;
+        document.getElementById("bar_blue").value = -1;
+        bar.rgb = `rgb(0,255,0)`;
+        document.getElementById("bar_color_label").innerHTML = `Bar color = rgb(-1, 1, -1)`;
+        bar.update();
+    } else if (name == "4") {  // cyan
+        document.getElementById("bar_red").value = -1;
+        document.getElementById("bar_green").value = 1;
+        document.getElementById("bar_blue").value = 1;
+        bar.rgb = `rgb(0,255,255)`;
+        document.getElementById("bar_color_label").innerHTML = `Bar color = rgb(-1, 1, 1)`;
+        bar.update();
+    } else if (name == "5") {  // blue
+        document.getElementById("bar_red").value = -1;
+        document.getElementById("bar_green").value = -1;
+        document.getElementById("bar_blue").value = 1;
+        bar.rgb = `rgb(0,0,255)`;
+        document.getElementById("bar_color_label").innerHTML = `Bar color = rgb(-1, -1, 1)`;
+        bar.update();
+    } else if (name == "6") {  // cyan
+        document.getElementById("bar_red").value = 1;
+        document.getElementById("bar_green").value = -1;
+        document.getElementById("bar_blue").value = 1;
+        bar.rgb = `rgb(255,0,255)`;
+        document.getElementById("bar_color_label").innerHTML = `Bar color = rgb(1, -1, 1)`;
+        bar.update();
     }
     updatePredictions()
 });
