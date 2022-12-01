@@ -226,18 +226,6 @@ window.addEventListener('mousemove',
         await updatePredictions();
 });
 
-// Continuously playing spike sound even when mouse is not moving:
-var spike = document.getElementById("audio");
-canvas.addEventListener('mouseover',
-    event => {
-    setInterval(() => {
-        if (!spike.muted && response > 0) {
-        spike.volume = Math.min(response/5, 1);
-        spike.play();
-        }
-    }, 100);
-});
-
 // Enlarge/shrink/rotate the bar:
 document.addEventListener('keypress', (event) => {
     var name = event.key;
@@ -312,4 +300,24 @@ mute_button.addEventListener('click', () => {
         mute_button.style.background = 'lightcoral';
     }
     spike.muted = !spike.muted;
-})
+});
+
+// Volume control logic:
+let maxVolumeButton = document.getElementById("volume");
+let maxVolume = 5;
+maxVolumeButton.addEventListener('change', (event) => {
+    maxVolume = maxVolumeButton.value;
+    document.getElementById("volume_label").innerHTML = `Max-Volume Response: ${maxVolume}`;
+});
+
+// Continuously playing spike sound even when mouse is not moving:
+var spike = document.getElementById("audio");
+canvas.addEventListener('mouseover',
+    event => {
+    setInterval(() => {
+        if (!spike.muted && response > 0) {
+        spike.volume = Math.min(response/maxVolume, 1);
+        spike.play();
+        }
+    }, 100);
+});
