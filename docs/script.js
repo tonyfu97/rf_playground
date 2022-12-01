@@ -214,13 +214,16 @@ let bar = new Bar(0, 0, 5, 10, 0, "#FFFFFF");
 bar.draw();
 
 // Mouse move logic:
-canvas.addEventListener('mousemove',
+let barFrozen = false;
+window.addEventListener('mousemove',
     async (event) => {
-    mouse.x = event.x + window.scrollX;
-    mouse.y = event.y + window.scrollY;
-    bar.update();
-    await loadingModelPromise;
-    await updatePredictions();
+        if (!barFrozen) {
+            mouse.x = event.x + window.scrollX;
+            mouse.y = event.y + window.scrollY;
+        }
+        bar.update();
+        await loadingModelPromise;
+        await updatePredictions();
 });
 
 // Continuously playing spike sound even when mouse is not moving:
@@ -257,6 +260,9 @@ document.addEventListener('keypress', (event) => {
     } else if (name == 't') {
         bar.angle -= Math.PI / 32;
         bar.update();
+    } else if (name == " ") {  // spacebar
+        event.preventDefault();
+        barFrozen = !barFrozen;  // prevents spacebar-evoked page scrolling.
     }
     updatePredictions()
 });
