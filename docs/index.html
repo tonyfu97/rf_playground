@@ -84,8 +84,16 @@
 
     <!-- Draw canvas -->
     <canvas id="rfCanvas" width="15px", height="15px"></canvas>
+    <canvas id="actualInputCanvas" width="15px", height="15px"></canvas>
+    <canvas id="rfPolygonCanvas" width="15px", height="15px"></canvas>
     <script type="module" src="script.js"></script>
     <audio id="audio" src="spike.m4a" muted></audio>
+
+    <!-- Undo/reset RF polygon -->
+    <div id="polygon_control">
+        <button id="undo">Undo</button>
+        <button id="reset">Reset</button>
+    </div>
 
     <!-- Overview image -->
     <img src="images/overview.jpg" alt="rf_playground_overview" id="overview_img">

@@ -8,8 +8,26 @@ body {
     position: absolute;
     top: 300px;
     left: 400px;
-    height: 200px;
-    width: 200px;
+    height: 250px;
+    width: 250px;
+}
+
+#actualInputCanvas {
+    border: 10px solid black;
+    position: absolute;
+    top: 300px;
+    left: 700px;
+    height: 250px;
+    width: 250px;
+}
+
+#rfPolygonCanvas {
+    border: 10px solid black;
+    position: absolute;
+    top: 300px;
+    left: 1000px;
+    height: 250px;
+    width: 250px;
 }
 
 input[type=range]{
@@ -51,4 +69,9 @@ input[type="range"]::-webkit-slider-thumb {
     border: 1px solid black;
     display: block;
     margin: 100px auto;
+}
+
+#polygon_control {
+    position: absolute;
+    left: 400px;
 }

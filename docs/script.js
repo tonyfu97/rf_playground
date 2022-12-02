@@ -1,5 +1,9 @@
 var canvas = document.querySelector("#rfCanvas");
+var actualInputCanvas = document.getElementById("actualInputCanvas");
+var rfPolygonCanvas = document.getElementById("rfPolygonCanvas");
 var context = canvas.getContext("2d");
+var actualInputContext = canvas.getContext("2d");
+var rfPolygonContext = canvas.getContext("2d");
 const CANVAS_BORDER_WIDTH = 10;  // must be consistent with style.css
 
 var model_name_menu = document.getElementById("model_name");
@@ -158,6 +162,80 @@ let mouse = {
     y: undefined
 }
 
+// 2 classes to store user-drawn receptive field polygon.
+class RfCorner {
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
+    }
+};
+
+class Rf {
+    constructor() {
+        this.corners = [];
+        this.closePath = false;
+    }
+
+    push(x, y) {
+        if (!this.closePath) {  // can't add anymore corners if the path is closed
+            this.corners.push(new RfCorner(x, y));
+        }
+    }
+
+    pop() {
+        if (this.corners.length > 0) {
+            this.corners.pop();
+        }
+    }
+
+    undo() {
+        if (this.closePath) {
+            this.closePath = false;
+        } else {
+            this.pop();
+        }
+    }
+
+    reset() {
+        this.corners = [];
+        this.closePath = false;
+    }
+
+    draw(noLine = false) {
+        if (this.corners.length > 0) {
+            context.beginPath();
+            context.moveTo(this.corners[0].x, this.corners[0].y);
+            for (let i = 1; i < this.corners.length; i++) {
+                context.lineTo(this.corners[i].x, this.corners[i].y);
+            }
+            if (this.closePath) {
+                context.closePath();
+                context.fillStyle="rgba(255,200,200,0.8)";
+                context.fill();
+            }
+            if (!noLine) {
+                context.stroke();
+            }
+        }
+    }
+};
+let rf = new Rf();
+
+
+// RF polygon logic:
+let undo_button = document.getElementById("undo");
+let reset_button = document.getElementById("reset");
+undo_button.addEventListener("click", () => {
+    rf.undo();
+    bar.update();
+});
+reset_button.addEventListener("click", () => {
+    rf.reset();
+    bar.update();
+});
+
+
+
 // Initialize bar:
 function Bar(x, y, width, height, angle, rgb) {
     this.x = x;
@@ -168,9 +246,6 @@ function Bar(x, y, width, height, angle, rgb) {
     this.rgb = rgb;   // as string like "rgb(255, 255, 255)" or "#FFFFFF"
 
     this.draw = function() {
-        context.fillStyle = canvasBgRgb;
-        context.fillRect(0, 0, canvas.width, canvas.height);
-        
         // Apply rotation matrix
         let top_left_x = this.x + (Math.cos(this.angle) * (-this.width/2) + Math.sin(this.angle) * (-this.height/2));
         let top_left_y = this.y + (-Math.sin(this.angle) * (-this.width/2) + Math.cos(this.angle) * (-this.height/2));
@@ -186,7 +261,6 @@ function Bar(x, y, width, height, angle, rgb) {
         
         // Draw the rectangle
         context.beginPath();
-        // context.rect(this.x, this.y, this.width, this.height);
         context.moveTo(top_left_x, top_left_y);
         context.lineTo(top_right_x, top_right_y);
         context.lineTo(bottom_right_x, bottom_right_y);
@@ -207,14 +281,16 @@ function Bar(x, y, width, height, angle, rgb) {
         context.fillStyle = canvasBgRgb;
         context.fillRect(0, 0, canvas.width, canvas.height);
         this.convert_mouse_xy_to_canvas_xy();
-        this.draw();
+        this.draw();  // draw bar
+        rf.draw();  // draw user-defined recepetive field polygon
     }
-}
+};
 let bar = new Bar(0, 0, 5, 10, 0, "#FFFFFF");
 bar.draw();
 
+
 // Mouse move logic:
-let barFrozen = false;
+let barFrozen = false;  // bar will be frozen by spacebar.
 window.addEventListener('mousemove',
     async (event) => {
         if (!barFrozen) {
@@ -226,7 +302,8 @@ window.addEventListener('mousemove',
         await updatePredictions();
 });
 
-// Enlarge/shrink/rotate the bar:
+
+// Enlarge/shrink/rotate/freeze the bar:
 document.addEventListener('keypress', (event) => {
     var name = event.key;
 
@@ -286,16 +363,45 @@ document.addEventListener('keypress', (event) => {
         bar.rgb = `rgb(0,0,255)`;
         document.getElementById("bar_color_label").innerHTML = `Bar color = rgb(-1, -1, 1)`;
         bar.update();
-    } else if (name == "6") {  // cyan
+    } else if (name == "6") {  // magenta
         document.getElementById("bar_red").value = 1;
         document.getElementById("bar_green").value = -1;
         document.getElementById("bar_blue").value = 1;
         bar.rgb = `rgb(255,0,255)`;
         document.getElementById("bar_color_label").innerHTML = `Bar color = rgb(1, -1, 1)`;
         bar.update();
+    } else if (name == "7") {  // black
+        document.getElementById("bar_red").value = -1;
+        document.getElementById("bar_green").value = -1;
+        document.getElementById("bar_blue").value = -1;
+        bar.rgb = `rgb(0,0,0)`;
+        document.getElementById("bar_color_label").innerHTML = `Bar color = rgb(-1, -1, -1)`;
+        bar.update();
+    } else if (name == "8") {  // white
+        document.getElementById("bar_red").value = 1;
+        document.getElementById("bar_green").value = 1;
+        document.getElementById("bar_blue").value = 1;
+        bar.rgb = `rgb(255,255,255)`;
+        document.getElementById("bar_color_label").innerHTML = `Bar color = rgb(1, 1, 1)`;
+        bar.update();
+    } else if (name == "Enter") {
+        rf.closePath = true;
+        bar.update();
     }
     updatePredictions()
 });
+
+
+// User-drawn receptive field polygon logic:
+canvas.addEventListener('mousedown', (event) => {
+    let x = mouse.x - canvasPos.left - CANVAS_BORDER_WIDTH;
+    x = x/canvasFactor;
+    let y = mouse.y - canvasPos.top - CANVAS_BORDER_WIDTH;
+    y = y/canvasFactor;
+    rf.push(x, y);
+    rf.draw(); 
+});
+
 
 // Get prediction. This function is called whenever the mouse is moved.
 async function updatePredictions() {
@@ -325,7 +431,8 @@ async function updatePredictions() {
     let unit_id_flatten = ((output_size ** 2) * unit_id) - 1 + (output_size * Math.floor(output_size/2)) + Math.ceil(output_size/2);
     response = responses[unit_id_flatten];
     element.innerHTML = `response = ${Math.round(response * 100) / 100}`;
-}
+};
+
 
 // Mute button initialization:
 let mute_button = document.getElementById("mute");
@@ -344,6 +451,7 @@ mute_button.addEventListener('click', () => {
     spike.muted = !spike.muted;
 });
 
+
 // Volume control logic:
 let maxVolumeButton = document.getElementById("volume");
 let maxVolume = 5;
@@ -351,6 +459,7 @@ maxVolumeButton.addEventListener('change', (event) => {
     maxVolume = maxVolumeButton.value;
     document.getElementById("volume_label").innerHTML = `Max-Volume Response: ${maxVolume}`;
 });
+
 
 // Continuously playing spike sound even when mouse is not moving:
 var spike = document.getElementById("audio");
