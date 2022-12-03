@@ -2,8 +2,8 @@ var canvas = document.querySelector("#rfCanvas");
 var actualInputCanvas = document.getElementById("actualInputCanvas");
 var rfPolygonCanvas = document.getElementById("rfPolygonCanvas");
 var context = canvas.getContext("2d");
-var actualInputContext = canvas.getContext("2d");
-var rfPolygonContext = canvas.getContext("2d");
+var actualInputContext = actualInputCanvas.getContext("2d");
+var rfPolygonContext = rfPolygonCanvas.getContext("2d");
 const CANVAS_BORDER_WIDTH = 10;  // must be consistent with style.css
 
 var model_name_menu = document.getElementById("model_name");
@@ -80,17 +80,25 @@ const updateRfSizeLi = (rf_size, canvas_size) => {
 }
 updateRfSizeLi(rf_size, canvas_size);
 
-// Canvas dimension logic:
+// Canvas dimension logic: (scaled to the neuron's RF size)
 const updateCanvasSize = (model_name, conv_i) => {
     canvas_size = rf_data[model_name].xn[conv_i];
     rf_size = rf_data[model_name].rf_sizes[conv_i];
     canvas.height = canvas_size;
     canvas.width = canvas_size;
+
+    actualInputCanvas.height = canvas_size;
+    actualInputCanvas.width = canvas_size;
+    rfPolygonCanvas.height = canvas_size;
+    rfPolygonCanvas.width = canvas_size;
+
+
     canvasPos = canvas.getBoundingClientRect();
     canvasFactor = (canvasPos.width - 2 * CANVAS_BORDER_WIDTH) / canvas_size
     bar.update();
     updateRfSizeLi(rf_size, canvas_size);
 }
+
 
 // model dropdown menu logic:
 model_name_menu.addEventListener('change', async (event) => {
@@ -201,20 +209,24 @@ class Rf {
         this.closePath = false;
     }
 
-    draw(noLine = false) {
+    draw(ctx, noLine = false) {
         if (this.corners.length > 0) {
-            context.beginPath();
-            context.moveTo(this.corners[0].x, this.corners[0].y);
+            ctx.beginPath();
+            ctx.moveTo(this.corners[0].x, this.corners[0].y);
             for (let i = 1; i < this.corners.length; i++) {
-                context.lineTo(this.corners[i].x, this.corners[i].y);
+                ctx.lineTo(this.corners[i].x, this.corners[i].y);
             }
             if (this.closePath) {
-                context.closePath();
-                context.fillStyle="rgba(255,200,200,0.8)";
-                context.fill();
+                ctx.closePath();
+                if (noLine) {
+                    ctx.fillStyle="rgba(255,255,255,1)";
+                } else {
+                    ctx.fillStyle="rgba(255,200,200,0.8)";
+                }
+                ctx.fill();
             }
             if (!noLine) {
-                context.stroke();
+                ctx.stroke();
             }
         }
     }
@@ -245,7 +257,7 @@ function Bar(x, y, width, height, angle, rgb) {
     this.angle = angle;  // in radians
     this.rgb = rgb;   // as string like "rgb(255, 255, 255)" or "#FFFFFF"
 
-    this.draw = function() {
+    this.draw = function(ctx) {
         // Apply rotation matrix
         let top_left_x = this.x + (Math.cos(this.angle) * (-this.width/2) + Math.sin(this.angle) * (-this.height/2));
         let top_left_y = this.y + (-Math.sin(this.angle) * (-this.width/2) + Math.cos(this.angle) * (-this.height/2));
@@ -260,14 +272,14 @@ function Bar(x, y, width, height, angle, rgb) {
         let bottom_right_y = this.y + (-Math.sin(this.angle) * (this.width/2) + Math.cos(this.angle) * (this.height/2));
         
         // Draw the rectangle
-        context.beginPath();
-        context.moveTo(top_left_x, top_left_y);
-        context.lineTo(top_right_x, top_right_y);
-        context.lineTo(bottom_right_x, bottom_right_y);
-        context.lineTo(bottom_left_x, bottom_left_y);
-        context.closePath();
-        context.fillStyle = this.rgb;
-        context.fill();
+        ctx.beginPath();
+        ctx.moveTo(top_left_x, top_left_y);
+        ctx.lineTo(top_right_x, top_right_y);
+        ctx.lineTo(bottom_right_x, bottom_right_y);
+        ctx.lineTo(bottom_left_x, bottom_left_y);
+        ctx.closePath();
+        ctx.fillStyle = this.rgb;
+        ctx.fill();
     }
 
     this.convert_mouse_xy_to_canvas_xy = function() {
@@ -278,15 +290,26 @@ function Bar(x, y, width, height, angle, rgb) {
     }
 
     this.update = function() {
+        this.convert_mouse_xy_to_canvas_xy();
+
+        // 1. the canvas that the user interact with:
         context.fillStyle = canvasBgRgb;
         context.fillRect(0, 0, canvas.width, canvas.height);
-        this.convert_mouse_xy_to_canvas_xy();
-        this.draw();  // draw bar
-        rf.draw();  // draw user-defined recepetive field polygon
+        this.draw(context);  // draw bar
+        rf.draw(context);  // draw user-defined recepetive field polygon
+
+        // 2. the canvas that contains the actual input (i.e., without the user-drawn RF polygon):
+        actualInputContext.fillStyle = canvasBgRgb;
+        actualInputContext.fillRect(0, 0, actualInputCanvas.width, actualInputCanvas.height);
+        this.draw(actualInputContext);  // draw bar
+
+        // 3. the canvas that contains the region outlined by the user-drawn RF polygon
+        rfPolygonContext.fillStyle = "rgba(0,0,0,1)";
+        rfPolygonContext.fillRect(0, 0, rfPolygonCanvas.width, rfPolygonCanvas.height);
+        rf.draw(rfPolygonContext, true);  // draw user-defined recepetive field polygon without outline
     }
 };
 let bar = new Bar(0, 0, 5, 10, 0, "#FFFFFF");
-bar.draw();
 
 
 // Mouse move logic:
@@ -399,13 +422,14 @@ canvas.addEventListener('mousedown', (event) => {
     let y = mouse.y - canvasPos.top - CANVAS_BORDER_WIDTH;
     y = y/canvasFactor;
     rf.push(x, y);
-    rf.draw(); 
+    rf.draw(context); 
+    rf.draw(rfPolygonContext, true); 
 });
 
 
 // Get prediction. This function is called whenever the mouse is moved.
 async function updatePredictions() {
-    const imgData = context.getImageData(0, 0, canvas_size, canvas_size).data;
+    const imgData = actualInputContext.getImageData(0, 0, canvas_size, canvas_size).data;
     // imgData is 1D array with length 1 * 4 * xn * xn.
 
     // Reshape 1D array into [1, 3, xn, xn] (but still flattens it).
@@ -472,3 +496,7 @@ canvas.addEventListener('mouseover',
         }
     }, 100);
 });
+
+
+// Submit button logic:
+var submitButton = document.getElementById("submit");
