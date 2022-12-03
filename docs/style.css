@@ -68,10 +68,14 @@ input[type="range"]::-webkit-slider-thumb {
     height: 300px;
     border: 1px solid black;
     display: block;
-    margin: 100px auto;
+    margin: 50px;
 }
 
 #polygon_control {
     position: absolute;
     left: 400px;
+}
+
+#submission_results {
+    margin: 100px 10px;
 }

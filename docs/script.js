@@ -289,8 +289,10 @@ function Bar(x, y, width, height, angle, rgb) {
         this.y = this.y/canvasFactor;
     }
 
-    this.update = function() {
-        this.convert_mouse_xy_to_canvas_xy();
+    this.update = function(freeze=false) {
+        if (!freeze) {
+            this.convert_mouse_xy_to_canvas_xy();
+        }
 
         // 1. the canvas that the user interact with:
         context.fillStyle = canvasBgRgb;
@@ -316,11 +318,10 @@ let bar = new Bar(0, 0, 5, 10, 0, "#FFFFFF");
 let barFrozen = false;  // bar will be frozen by spacebar.
 window.addEventListener('mousemove',
     async (event) => {
-        if (!barFrozen) {
-            mouse.x = event.x + window.scrollX;
-            mouse.y = event.y + window.scrollY;
-        }
-        bar.update();
+        mouse.x = event.x + window.scrollX;
+        mouse.y = event.y + window.scrollY;
+
+        bar.update(barFrozen);
         await loadingModelPromise;
         await updatePredictions();
 });
@@ -409,7 +410,7 @@ document.addEventListener('keypress', (event) => {
         bar.update();
     } else if (name == "Enter") {
         rf.closePath = true;
-        bar.update();
+        bar.update(barFrozen);
     }
     updatePredictions()
 });
@@ -500,3 +501,4 @@ canvas.addEventListener('mouseover',
 
 // Submit button logic:
 var submitButton = document.getElementById("submit");
+// submitButton.addEventListener("click", () => {})
