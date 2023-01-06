@@ -78,3 +78,19 @@ submitButton.addEventListener("click", () => {
   viewAlbum("album1");
   show_submission_results();
 })
+
+// Convert image into array TODO:
+// function convertImage(image) {
+//   const canvas = drawImageToCanvas(image);
+//   const ctx = canvas.getContext('2d');
+  
+//   let result = [];
+//   for (let y = 0; y < canvas.height; y++) {
+//     result.push([]);
+//     for (let x = 0; x < canvas.width; x++) {
+//       let data = ctx.getImageData(x, y, 1, 1).data;
+//       result[y].push(data[0]);
+//       result[y].push(data[1]);
+//       result[y].push(data[2]);
+//     }
+//   }
