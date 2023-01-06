@@ -497,8 +497,3 @@ canvas.addEventListener('mouseover',
         }
     }, 100);
 });
-
-
-// Submit button logic:
-var submitButton = document.getElementById("submit");
-// submitButton.addEventListener("click", () => {})
