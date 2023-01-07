@@ -22,12 +22,12 @@ body {
 }
 
 #rfPolygonCanvas {
-    border: 10px solid black;
+    /* border: 10px solid black; */
     position: absolute;
     top: 300px;
     left: 1000px;
-    height: 250px;
-    width: 250px;
+    /* height: 250px;
+    width: 250px; */
 }
 
 input[type=range]{
