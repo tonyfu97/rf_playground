@@ -95,7 +95,7 @@ submitButton.addEventListener("click", async() => {
   load_ground_truth_img();
 
   // Wait 300 ms for the image to load first.
-  await delay(300);
+  await delay(300); 
 
   // Get the flatten image array of the ground truth image.
   let ground_truth_img = document.getElementById('ground_truth_img');
@@ -107,16 +107,17 @@ submitButton.addEventListener("click", async() => {
   let rf_polygon_array = convert_canvas_to_array(rf_polygon_canvas);
 
   // Metric calculations:
-  let R = pcorr(ground_truth_array, rf_polygon_array);
+  let R = calculate_pcorr(ground_truth_array, rf_polygon_array);
+  let threshold = 128;
+  let IOU = calculate_iou(ground_truth_array, rf_polygon_array, threshold);
 
   // Update the html element to display the metrics:
   let submission_results_div = document.getElementById('submission_results');
   submission_results_div.innerHTML = getHtml([
-    '<h3>Submission results:</h3>',
+    '<h3>Submission results (color does not matter):</h3>',
         '<ul>',
-            `<li id="direct_corr">Direct correlation: ${R}</li>`,
-            `<li id="earth_mover">Earth mover distance:</li>`,
-            `<li id="iou">Intersection over union:</li>`,
+            `<li id="direct_corr">Direct correlation: ${round_num(R, 4)}</li>`,
+            `<li id="iou">Intersection over union: ${round_num(IOU, 4)}</li>`,
         `</ul>`
   ]);
 
@@ -155,13 +156,18 @@ const convert_canvas_to_array = (temp_canvas) => {
       result.push(data[0]); // Get the red channel. Doesn't matter since the image is grayscale.
     }
   }
-  console.log(result);
   return result;
 };
 
-// tltility function to calculate Pearson coorelation coefficient:
+// ultility function to round a number:
+const round_num = (num, decimal_places) => {
+  const factor = Math.pow(10, decimal_places);
+  return Math.round(num * factor) / factor;
+}
+
+// ultility function to calculate Pearson coorelation coefficient:
 // Credit: https://stackoverflow.com/questions/15886527/javascript-library-for-pearson-and-or-spearman-correlations
-const pcorr = (x, y) => {
+const calculate_pcorr = (x, y) => {
   let sumX  = 0,
       sumY  = 0,
       sumXY = 0,
@@ -183,8 +189,39 @@ const pcorr = (x, y) => {
   return numerator / denominator;
 };
 
+
+// ultility function to threshold the array. Pixels above the threshold become
+// 255, and those less than or equal to threshold become zeros.
+const create_threshold_array = (arr, threshold) => {
+  let output = arr.map(x => {
+    if (x < threshold) {
+      return 0;
+    } else {
+      return 255;
+    }
+  });
+  return output;
+}
+
 // ultility function to calculate intersection over union (IOU):
-const iou = (x, y, threshold) => {
-  ;
+const calculate_iou = (x, y, threshold) => {
+  if (x.length != y.length) {
+    throw new Error('iou function: x and y must have same length.');
+  }
+
+  let intersection = 0;
+  let union = 0;
+
+  for (let i = 0; i < x.length; i++) {
+    if (x[i] > threshold || y[i] > threshold) {
+      union++;
+    }
+    if (x[i] > threshold && y[i] > threshold) {
+      intersection++;
+    }
+  }
+  
+  if (union == 0) { return 0; };
+  return intersection/union;
 };
 

@@ -19,6 +19,7 @@ body {
     left: 700px;
     height: 250px;
     width: 250px;
+    display: none;
 }
 
 #rfPolygonCanvas {
@@ -28,6 +29,7 @@ body {
     left: 1000px;
     /* height: 250px;
     width: 250px; */
+    display: none;
 }
 
 input[type=range]{
