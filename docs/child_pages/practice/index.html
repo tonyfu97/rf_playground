@@ -18,9 +18,9 @@
 
     <!-- RF Size -->
     <div id="rf_size_div">
-        <label for="rf_size" id="rf_size_label">RF Size = 100</label>
+        <label for="rf_size" id="rf_size_label">RF Size = 25</label>
         <br>
-        <input type="range" id="bar_rf_size" name="rf_size" min="10" max="300" value="100" step="5">
+        <input type="range" id="bar_rf_size" name="rf_size" min="10" max="50" value="25" step="5">
     </div>
     <br>
 
@@ -50,9 +50,9 @@
     <!-- Audio controls -->
     <button id="mute"></button>
     <br>
-    <label for="volume" id="volume_label">Max-Volume Response: 5</label>
+    <label for="volume" id="volume_label">Max-Volume Response: 0.5</label>
     <br>
-    <input type="range" id="volume" name="volume" min="0" max="20" value="5" step="1">
+    <input type="range" id="volume" name="volume" min="0" max="1" value="0.5" step="0.1">
 
     <!-- Instructions -->
     <div class="instructions">
@@ -66,6 +66,8 @@
             <li>Press "a" to decrease bar width</li>
             <li>Press spacebar to freeze bar</li>
             <li>Use number keys as shortcuts for bar color</li>
+            <li>Practice with linear RF with random color</li>
+            <li>Press Enter to change ground truth color</li>
         </ul>
     </div>
 
@@ -83,6 +85,7 @@
         <button id="submit">Submit</button>
         <button id="gt_undo">Undo</button>
         <button id="gt_reset">Reset</button>
+        <button id="gt_hide">Hide Ground Truth</button>
     </div>
 
     <!-- Submission results -->

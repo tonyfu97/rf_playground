@@ -6,7 +6,7 @@ body {
 #rfCanvas {
     border: 10px solid black;
     position: absolute;
-    top: 300px;
+    top: 350px;
     left: 400px;
     height: 250px;
     width: 250px;
@@ -15,7 +15,7 @@ body {
 #actualInputCanvas {
     border: 10px solid black;
     position: absolute;
-    top: 300px;
+    top: 350px;
     left: 700px;
     height: 250px;
     width: 250px;
@@ -25,7 +25,7 @@ body {
 #rfPolygonCanvas {
     /* border: 10px solid black; */
     position: absolute;
-    top: 300px;
+    top: 350px;
     left: 1000px;
     /* height: 250px;
     width: 250px; */
@@ -35,7 +35,7 @@ body {
 #groundTruthCanvasForDisplay {
     border: 10px solid black;
     position: absolute;
-    top: 300px;
+    top: 350px;
     left: 700px;
     height: 250px;
     width: 250px;

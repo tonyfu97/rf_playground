@@ -12,7 +12,7 @@ var groundTruthCanvasForDisplayContext = groundTruthCanvasForDisplayCanvas.getCo
 
 const CANVAS_BORDER_WIDTH = 10;  // must be consistent with style.css
 
-let rf_size = 100;
+let rf_size = 25;
 let canvasPos = canvas.getBoundingClientRect();
 let canvasFactor = (canvasPos.width - 2 * CANVAS_BORDER_WIDTH) / rf_size;
 
@@ -137,11 +137,7 @@ class Rf {
             }
             if (this.closePath) {
                 ctx.closePath();
-                if (noLine) {
-                    ctx.fillStyle="rgba(255,255,255,1)";
-                } else {
-                    ctx.fillStyle="rgba(255,200,200,0.8)";
-                }
+                ctx.fillStyle=ground_truth_color;
                 ctx.fill();
             }
             if (!noLine) {
@@ -156,6 +152,16 @@ let polygon_rf = new Rf();
 let gt_rf = new Rf();
 // To keep track of which Rf has been last drawn.
 let is_polygon_rf_last_drawn = true;
+
+// To set a random color everytime the user generate a new ground truth.
+let ground_truth_color;
+const generate_random_gt_rf_color = () => {
+    let r = Math.floor(Math.random() * 256);
+    let g = Math.floor(Math.random() * 256);
+    let b = Math.floor(Math.random() * 256);
+    ground_truth_color = `rgba(${r}, ${g}, ${b}, 1)`;
+}
+
 
 // RF polygon logic:
 let undo_button = document.getElementById("undo");
@@ -174,6 +180,8 @@ reset_button.addEventListener("click", () => {
 // Ground truth RF logic:
 let gt_undo_button = document.getElementById("gt_undo");
 let gt_reset_button = document.getElementById("gt_reset");
+let gt_hide_button = document.getElementById("gt_hide");
+let is_gt_rf_hidden = false;
 gt_undo_button.addEventListener("click", () => {
     is_polygon_rf_last_drawn = false;
     gt_rf.undo();
@@ -184,6 +192,18 @@ gt_reset_button.addEventListener("click", () => {
     gt_rf.reset();
     bar.update();
 });
+gt_hide_button.addEventListener("click", () => {
+    if (is_gt_rf_hidden) {
+        document.getElementById('groundTruthCanvasForDisplay').setAttribute('style', 'display:inline;');
+        gt_hide_button.innerText = "Hide Groud Truth";
+        is_gt_rf_hidden = false;
+    } else {
+        document.getElementById('groundTruthCanvasForDisplay').setAttribute('style', 'display:none;');
+        is_gt_rf_hidden = true;
+        gt_hide_button.innerText = "Show Ground Truth";
+    }
+});
+
 
 
 // Initialize bar:
@@ -253,13 +273,13 @@ function Bar(x, y, width, height, angle, rgb) {
         groundTruthCanvasForDisplayContext.fillRect(0, 0, groundTruthCanvasForDisplayCanvas.width, groundTruthCanvasForDisplayCanvas.height);
         gt_rf.draw(groundTruthCanvasForDisplayContext);  // draw user-defined polygon with outline
 
-        // 4. the canvas that contains the region outlined by the user-drawn GROUND TRUTH RF polygon
+        // 5. the canvas that contains the region outlined by the user-drawn GROUND TRUTH RF polygon
         groundTruthCanvasForMetricCalculationContext.fillStyle = "rgba(0,0,0,1)";
         groundTruthCanvasForMetricCalculationContext.fillRect(0, 0, groundTruthCanvasForMetricCalculationCanvas.width, groundTruthCanvasForMetricCalculationCanvas.height);
         gt_rf.draw(groundTruthCanvasForMetricCalculationContext, true);  // draw user-defined polygon without outline
     }
 };
-let bar = new Bar(0, 0, 10, 50, 0, "#FFFFFF");
+let bar = new Bar(0, 0, 5, 10, 0, "#FFFFFF");
 update_rf_size(rf_size);
 
 
@@ -360,6 +380,7 @@ document.addEventListener('keypress', (event) => {
         if (is_polygon_rf_last_drawn) {
             polygon_rf.closePath = true;
         } else {
+            generate_random_gt_rf_color();
             gt_rf.closePath = true;
         }
         bar.update(barFrozen);
@@ -393,24 +414,60 @@ groundTruthCanvasForDisplayCanvas.addEventListener('mousedown', (event) => {
 });
 
 
+// ultility function to calculate Pearson coorelation coefficient:
+// Credit: https://stackoverflow.com/questions/15886527/javascript-library-for-pearson-and-or-spearman-correlations
+const calculate_pcorr = (x, y) => {
+    let sumX  = 0,
+        sumY  = 0,
+        sumXY = 0,
+        sumX2 = 0,
+        sumY2 = 0;
+    const minLength = x.length = y.length = Math.min(x.length, y.length),
+      reduce = (xi, idx) => {
+        const yi = y[idx];
+        sumX += xi;
+        sumY += yi;
+        sumXY += xi * yi;
+        sumX2 += xi * xi;
+        sumY2 += yi * yi;
+      }
+    x.forEach(reduce);
+    let numerator = (minLength * sumXY - sumX * sumY);
+    let denominator =  Math.sqrt((minLength * sumX2 - sumX * sumX) * (minLength * sumY2 - sumY * sumY));
+    if (denominator == 0) { return 0; }
+    return numerator / denominator;
+};
+
+
+// ultility function to convert canvas into array:
+const convert_canvas_to_array = (temp_canvas) => {
+    const ctx = temp_canvas.getContext('2d');
+  
+    let result = [];
+    for (let y = 0; y < temp_canvas.height; y++) {
+      for (let x = 0; x < temp_canvas.width; x++) {
+        let data = ctx.getImageData(x, y, 1, 1).data; // get one pixel at (x, y)
+        result.push(data[0]); // R
+        result.push(data[1]); // G
+        result.push(data[2]); // B
+      }
+    }
+    return result;
+  };
+
+
 // Get prediction. This function is called whenever the mouse is moved.
 async function updatePredictions() {
-    const imgData = actualInputContext.getImageData(0, 0, rf_size, rf_size).data;
-    // imgData is 1D array with length 1 * 4 * xn * xn.
+    // Get the flatten image array of the ground truth image.
+    let ground_truth_array = convert_canvas_to_array(groundTruthCanvasForMetricCalculationCanvas);
 
-    // Reshape 1D array into [1, 3, xn, xn] (but still flattens it).
-    // let rgbArray = new Float32Array(3 * rf_size * rf_size);
-    // let idx = 0
-    // for (var rgb_i = 0; rgb_i < 3; rgb_i++) { // RGB only (ignoring the 4th channel)
-    //     for (var i = 0; i < rf_size; i++) { // Height
-    //         for (var j = 0; j < rf_size; j++) { // Width
-    //             let offset = (i * rf_size * 4) + (j * 4) + rgb_i
-    //             // Change color range from [0, 255] to [-1, 1).
-    //             rgbArray[idx++] = (imgData[offset] - 128) / 128;
-    //         }
-    //     }
-    // }
-    response = 1;
+    // Get the flatten image array of the user-drawn RF polygon (cropped).
+    let actual_input_array = convert_canvas_to_array(actualInputCanvas);
+
+    // Metric calculations:
+    let R = calculate_pcorr(ground_truth_array, actual_input_array);
+
+    response = R;
     let element = document.getElementById('output');
     element.innerHTML = `response = ${Math.round(response * 100) / 100}`;
 };
@@ -436,7 +493,7 @@ mute_button.addEventListener('click', () => {
 
 // Volume control logic:
 let maxVolumeButton = document.getElementById("volume");
-let maxVolume = 5;
+let maxVolume = 0.5;
 maxVolumeButton.addEventListener('change', (event) => {
     maxVolume = maxVolumeButton.value;
     document.getElementById("volume_label").innerHTML = `Max-Volume Response: ${maxVolume}`;
