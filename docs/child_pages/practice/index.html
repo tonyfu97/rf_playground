@@ -4,39 +4,24 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RF Playground</title>
+    <title>Practice RF Mapping</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- Load ONNX.js -->
     <script src="https://cdn.jsdelivr.net/npm/onnxjs/dist/onnx.min.js"></script>
 
-    <!-- Header -->
     <header>
-        <h1>Welcome to Receptive Field Playground!</h1>
-        <button><a href="./child_pages/practice/index.html">Practice</a></button>
-        <button><a href="./child_pages/ground_truth_gallery/index.html">Ground Truth Gallery</a></button>
+        <h1>Practice Receptive Field Mapping</h1>
+        <button><a href="../../index.html">RF Playground</a></button>
     </header>
 
-    <!-- Model drop down menu -->
-    <label for="model_name">Choose a model: </label>
-    <select id="model_name">
-        <option value="alexnet">AlexNet</option>
-        <option value="vgg16">Vgg16</option>
-        <option value="resnet18">ResNet18</option>
-    </select>
-    <br>
-
-    <!-- Layer drop down menu -->
-    <label for="layer">Choose a layer: </label>
-    <select id="layer">
-        <option value="conv1">conv1</option>
-    </select>
-    <br>
-
-    <!-- Unit id input -->
-    <label for="unit_id" id="unit_id_label">Choose a unit: </label>
-    <input type="number" id="unit_id" name="unit_id" min="0" max="0" value="0">
+    <!-- RF Size -->
+    <div id="rf_size_div">
+        <label for="rf_size" id="rf_size_label">RF Size = 100</label>
+        <br>
+        <input type="range" id="bar_rf_size" name="rf_size" min="10" max="300" value="100" step="5">
+    </div>
     <br>
 
     <!-- Bar color -->
@@ -81,7 +66,6 @@
             <li>Press "a" to decrease bar width</li>
             <li>Press spacebar to freeze bar</li>
             <li>Use number keys as shortcuts for bar color</li>
-            <li id="rf_size_li">RF size = , Canvas size = </li>
         </ul>
     </div>
 
@@ -90,24 +74,28 @@
     <canvas id="actualInputCanvas" width="15px", height="15px"></canvas>
     <canvas id="rfPolygonCanvas" width="15px", height="15px"></canvas>
     <script type="module" src="script.js"></script>
-    <audio id="audio" src="spike.m4a" muted></audio>
+    <audio id="audio" src="../../spike.m4a" muted></audio>
 
     <!-- Undo/reset/submit RF polygon -->
     <div id="polygon_control">
         <button id="undo">Undo</button>
         <button id="reset">Reset</button>
         <button id="submit">Submit</button>
+        <button id="gt_undo">Undo</button>
+        <button id="gt_reset">Reset</button>
     </div>
 
     <!-- Submission results -->
-    <div id="submission_results"></div>
-    <div id="ground_truth_img_div"></div>
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1289.0.min.js"></script>
+    <div id="submission_results">
+        <h3>Submission results:</h3>
+        <ul>
+            <li id="direct_corr">Direct correlation:</li>
+            <li id="iou">Intersection over union:</li>
+        </ul>
+    </div>
+
+    <canvas id="groundTruthCanvasForDisplay" width="15px", height="15px"></canvas>
+    <canvas id="groundTruthCanvasForMetricCalculation" width="15px", height="15px"></canvas>
     <script type="module" src="submit.js"></script>
-
-
-    <!-- Overview image -->
-    <!-- <img src="images/overview.jpg" alt="rf_playground_overview" id="overview_img"> -->
-
 </body>
 </html>

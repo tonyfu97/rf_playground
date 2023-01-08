@@ -80,6 +80,9 @@ function getHtml(template) {
 // show the photos that exist in an album.
 function load_ground_truth_img() {
   var img_url = `https://s3.us-west-2.amazonaws.com/rfmapping/${model_name}/${layer}/${unit_id}.png`;
+  // Put two identical images in the DOM:
+  //    img #1: correct size (for metric calculations) but hidden.
+  //    img #2: enlarged but shown to user.
   var html_template = [
     '<h3>Ground truth image:</h3>',
     '<img id="ground_truth_img" style="display:none;" src="' + img_url + '"/>',
@@ -115,10 +118,10 @@ submitButton.addEventListener("click", async() => {
   let submission_results_div = document.getElementById('submission_results');
   submission_results_div.innerHTML = getHtml([
     '<h3>Submission results (color does not matter):</h3>',
-        '<ul>',
-            `<li id="direct_corr">Direct correlation: ${round_num(R, 4)}</li>`,
-            `<li id="iou">Intersection over union: ${round_num(IOU, 4)}</li>`,
-        `</ul>`
+    '<ul>',
+        `<li id="direct_corr">Direct correlation: ${round_num(R, 4)}</li>`,
+        `<li id="iou">Intersection over union: ${round_num(IOU, 4)}</li>`,
+    `</ul>`
   ]);
 
   // Display the ground truth image.

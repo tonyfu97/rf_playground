@@ -1,0 +1,103 @@
+
+body {
+    margin: 0;
+}
+
+#rfCanvas {
+    border: 10px solid black;
+    position: absolute;
+    top: 300px;
+    left: 400px;
+    height: 250px;
+    width: 250px;
+}
+
+#actualInputCanvas {
+    border: 10px solid black;
+    position: absolute;
+    top: 300px;
+    left: 700px;
+    height: 250px;
+    width: 250px;
+    display: none;
+}
+
+#rfPolygonCanvas {
+    /* border: 10px solid black; */
+    position: absolute;
+    top: 300px;
+    left: 1000px;
+    /* height: 250px;
+    width: 250px; */
+    display: none;
+}
+
+#groundTruthCanvasForDisplay {
+    border: 10px solid black;
+    position: absolute;
+    top: 300px;
+    left: 700px;
+    height: 250px;
+    width: 250px;
+}
+
+#groundTruthCanvasForMetricCalculation {
+    border: 10px solid black;
+    position: absolute;
+    top: 900px;
+    left: 300px;
+    /* height: 250px;
+    width: 250px; */
+    display: none;
+}
+
+input[type=range]{
+    -webkit-appearance: none; /* Override default CSS styles */
+    border: 1px solid black;
+    border-radius: 12px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: black;
+}
+
+#bar_red, #bg_red {
+    background: lightcoral;
+}
+
+#bar_green, #bg_green {
+    background: lightgreen;
+}
+
+#bar_blue, #bg_blue {
+    background: lightblue;
+}
+
+#mute {
+    border-radius: 10px;
+}
+
+.instructions {
+    font-family: monospace;
+}
+
+#overview_img {
+    height: 300px;
+    border: 1px solid black;
+    display: block;
+    margin: 50px;
+}
+
+#polygon_control {
+    position: absolute;
+    left: 400px;
+}
+
+#submit {
+    margin-right: 150px;
+}
+
