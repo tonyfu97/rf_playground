@@ -155,7 +155,9 @@ const convert_canvas_to_array = (temp_canvas) => {
   let result = [];
   for (let y = padding; y < temp_canvas.height - padding; y++) {
     for (let x = padding; x < temp_canvas.width - padding; x++) {
-      let data = ctx.getImageData(x, y, 1, 1).data; // get one pixel at (x, y)
+      let data = new Image();
+      data.crossOrigin = "Anonymous";
+      data = ctx.getImageData(x, y, 1, 1).data; // get one pixel at (x, y)
       result.push(data[0]); // Get the red channel. Doesn't matter since the image is grayscale.
     }
   }
