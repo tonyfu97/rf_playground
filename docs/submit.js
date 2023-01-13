@@ -80,16 +80,28 @@ function getHtml(template) {
 // show the photos that exist in an album.
 function load_ground_truth_img() {
   var img_url = `https://s3.us-west-2.amazonaws.com/rfmapping/${model_name}/${layer}/${unit_id}.png`;
-  // Put two identical images in the DOM:
+  var img_description = "ground truth image";
+  // There are two identical images in the DOM:
   //    img #1: correct size (for metric calculations) but hidden.
+  document.getElementById('ground_truth_img').crossOrigin = "Anonymous";
+  document.getElementById('ground_truth_img').src = img_url;
+  document.getElementById('ground_truth_img').alt = img_description;
   //    img #2: enlarged but shown to user.
-  var html_template = [
-    '<h3>Ground truth image:</h3>',
-    '<img id="ground_truth_img" style="display:none;" src="' + img_url + '"/>',
-    '<img style="width:250px;height:250px;" src="' + img_url + '"/>'
-  ];
-  document.getElementById('ground_truth_img_div').innerHTML = getHtml(html_template);
+  document.getElementById('ground_truth_img_for_display').crossOrigin = "Anonymous";
+  document.getElementById('ground_truth_img_for_display').src = img_url;
+  document.getElementById('ground_truth_img_for_display').alt = img_description;
 };
+
+// function startDownload() {
+//   let imageURL = "https://cdn.glitch.com/4c9ebeb9-8b9a-4adc-ad0a-238d9ae00bb5%2Fmdn_logo-only_color.svg?1535749917189";
+//   let imageDescription = "The Mozilla logo";
+
+//   downloadedImg = new Image();
+//   downloadedImg.crossOrigin = "Anonymous";
+//   downloadedImg.addEventListener("load", imageReceived, false);
+//   downloadedImg.alt = imageDescription;
+//   downloadedImg.src = imageURL;
+// }
 
 // submit button logic:
 var submitButton = document.getElementById("submit");
@@ -155,9 +167,7 @@ const convert_canvas_to_array = (temp_canvas) => {
   let result = [];
   for (let y = padding; y < temp_canvas.height - padding; y++) {
     for (let x = padding; x < temp_canvas.width - padding; x++) {
-      let data = new Image();
-      data.crossOrigin = "Anonymous";
-      data = ctx.getImageData(x, y, 1, 1).data; // get one pixel at (x, y)
+      let data = ctx.getImageData(x, y, 1, 1).data; // get one pixel at (x, y)
       result.push(data[0]); // Get the red channel. Doesn't matter since the image is grayscale.
     }
   }
