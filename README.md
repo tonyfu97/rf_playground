@@ -13,3 +13,5 @@ For local development, consider turning off CORS by typing the following in the 
 The web app is deployed [here](https://tonyfu97.github.io/rf_playground/) (powered by GitHub Pages. Chrome is recommended. Audio feedback does not work well on Safari.)
 
 Credit: This work is inspired by [elliotwaite's demo](https://github.com/elliotwaite/pytorch-to-javascript-with-onnx-js)
+
+I did a presentation on this [slides](https://docs.google.com/presentation/d/1C_eCHT0dX2qiWg2oYxUmydyeqRlkJOvALiQn3_r-G7c/edit?usp=share_link)
