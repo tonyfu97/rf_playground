@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <title>RF Ground Truth Gallery</title>
 </head>
 <body>
     <header>
         <h1>RF Ground Truth Gallery</h1>
-        <button><a href="../../index.html">RF Playground</a></button>
+        <button class="button-1"><a href="../../index.html">RF Playground</a></button>
     </header>
     
-    <label for="model_name">Choose a model: </label>
+    <label for="model_name">Model: </label>
     <select id="model_name">
         <option value="alexnet">AlexNet</option>
         <option value="vgg16">Vgg16</option>
@@ -21,14 +22,14 @@
     <br>
 
     <!-- Layer drop down menu -->
-    <label for="layer">Choose a layer: </label>
+    <label for="layer">Layer: </label>
     <select id="layer">
         <option value="conv1">conv1</option>
     </select>
     <br>
 
     <!-- Unit id input -->
-    <label for="unit_id" id="unit_id_label">Choose a unit: </label>
+    <label for="unit_id" id="unit_id_label">Unit: </label>
     <input type="number" id="unit_id" name="unit_id" min="0" max="0" value="0">
     <br>
 

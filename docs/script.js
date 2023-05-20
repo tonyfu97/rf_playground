@@ -40,7 +40,7 @@ let conv_i = parseInt(layer.match(/\d+/)[0]) - 1;
 let unit_id = parseInt(unit_id_input.value);
 let num_layers = rf_data[model_name].layer_indices.length;
 let num_units = rf_data[model_name].nums_units[conv_i];
-unit_id_label.innerHTML = `Choose a unit (0 - ${num_units-1}): `;
+unit_id_label.innerHTML = `Unit (0 - ${num_units-1}): `;
 unit_id_input.max = num_units - 1;
 
 // populate the layer dropdown menu according to the model.
@@ -138,26 +138,20 @@ var bg_color_div = document.getElementById("bg_color");
 const convertTo256 = num => Math.floor((parseFloat(num) + 1) * 128);
 let canvasBgRgb = "rgb(128,128,128)";
 
-// Bar color slider logic:
-bar_color_div.addEventListener('change', (event) => {
-    let r = document.getElementById("bar_red").value;
-    let g = document.getElementById("bar_green").value;
-    let b = document.getElementById("bar_blue").value;
-    bar.rgb = `rgb(${convertTo256(r)},${convertTo256(g)},${convertTo256(b)})`;
-    document.getElementById("bar_color_label").innerHTML = `Bar color = rgb(${r}, ${g}, ${b})`;
+// Bar color picker logic:
+document.getElementById("bar_color_input").addEventListener('input', (event) => {
+    let rgb = event.target.value;
+    bar.rgb = rgb;
     bar.update();
 })
 
-// Background color slider logic:
-bg_color_div.addEventListener('change', (event) => {
-    let r = document.getElementById("bg_red").value;
-    let g = document.getElementById("bg_green").value;
-    let b = document.getElementById("bg_blue").value;
-    let rgb = `rgb(${convertTo256(r)},${convertTo256(g)},${convertTo256(b)})`;
-    document.getElementById("bg_color_label").innerHTML = `Background color = rgb(${r}, ${g}, ${b})`;
+// Background color picker logic:
+document.getElementById("bg_color_input").addEventListener('input', (event) => {
+    let rgb = event.target.value;
     canvasBgRgb = rgb;
     bar.update();
 })
+
 
 // Load model.
 let sess = new onnx.InferenceSession();
@@ -455,7 +449,7 @@ async function updatePredictions() {
     let output_size = Math.sqrt(responses.length / num_units)
     let unit_id_flatten = ((output_size ** 2) * unit_id) - 1 + (output_size * Math.floor(output_size/2)) + Math.ceil(output_size/2);
     response = responses[unit_id_flatten];
-    element.innerHTML = `response = ${Math.round(response * 100) / 100}`;
+    element.innerHTML = `Response =<br> ${Math.round(response * 100) / 100}`;
 };
 
 

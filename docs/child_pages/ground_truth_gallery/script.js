@@ -39,7 +39,7 @@ let conv_i = parseInt(layer.match(/\d+/)[0]) - 1;
 let unit_id = parseInt(unit_id_input.value);
 let num_layers = rf_data[model_name].layer_indices.length;
 let num_units = rf_data[model_name].nums_units[conv_i];
-unit_id_label.innerHTML = `Choose a unit (0 - ${num_units-1}): `;
+unit_id_label.innerHTML = `Unit (0 - ${num_units-1}): `;
 unit_id_input.max = num_units - 1;
 
 // populate the layer dropdown menu according to the model.

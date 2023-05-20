@@ -1,6 +1,88 @@
 
 body {
     margin: 0;
+    font-family: Arial, sans-serif; /* Choose a suitable font */
+    color: #333; /* Choose a suitable color */
+    line-height: 1.6;
+}
+
+header {
+    padding: 20px;
+    background-color: #f5f5f5;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    padding-bottom: 20px;
+}
+
+header a.button {
+    display: inline-block;
+    margin: 0 10px;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #fff;
+    background-color: #333; /* Choose a suitable color */
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+header a.button:hover {
+    background-color: #555; /* Choose a suitable color */
+}
+
+.canvas-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+.canvas {
+    border: 10px solid black;
+    height: 250px;
+    width: 250px;
+}
+
+.dropdowns-container {
+    display: block;
+    width: 800px;
+    margin-left: 20px;
+    padding: 20px 0;
+}
+
+.select-container {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.color-container {
+    display: block;
+    width: 750px;
+    margin: 0;
+    padding: 0;
+}
+
+.color-selection {
+    display: inline-block;
+    width: calc(33% - 20px);
+    text-align: center;
+    margin-right: 0px;
+}
+
+#output-container {
+    display: inline-block;
+    width: calc(33% - 20px);
+    text-align: center;
+}
+
+.audio-controls {
+    margin-left: 20px;
+    margin-top: 20px;
+}
+
+#actualInputCanvas, #rfPolygonCanvas {
+    display: none;
 }
 
 #rfCanvas {

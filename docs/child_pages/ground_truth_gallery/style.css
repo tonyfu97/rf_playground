@@ -1,0 +1,43 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.button-1 {
+    background-color: white; 
+    color: black; 
+    border: 2px solid #747474;
+}
+
+.button-1:hover {
+    background-color: #8e8e8e;
+    color: white;
+}
+
+select, input {
+    margin: 10px 0;
+}
+
+#ground_truth_img_div {
+    margin-top: 20px;
+}
